@@ -28,6 +28,47 @@ document.querySelectorAll('[data-plan]').forEach(link => link.addEventListener('
   if (interest) interest.value = link.dataset.plan;
 }));
 
+const phone = document.querySelector('[name="telefone"]');
+if (phone) {
+  phone.addEventListener('input', event => {
+    let value = event.target.value.replace(/\D/g, '').slice(0, 11);
+    if (value.length > 10) value = value.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+    else if (value.length > 6) value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+    else if (value.length > 2) value = value.replace(/(\d{2})(\d+)/, '($1) $2');
+    event.target.value = value;
+  });
+}
+
+const cpf = document.querySelector('[name="cpf"]');
+if (cpf) {
+  cpf.addEventListener('input', event => {
+    let value = event.target.value.replace(/\D/g, '').slice(0, 11);
+    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+    value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    event.target.value = value;
+  });
+}
+
+const cep = document.querySelector('[name="cep"]');
+if (cep) {
+  cep.addEventListener('input', event => {
+    const value = event.target.value.replace(/\D/g, '').slice(0, 8);
+    event.target.value = value.replace(/(\d{5})(\d)/, '$1-$2');
+  });
+}
+
+const leadForm = document.querySelector('#lead-form');
+if (leadForm) {
+  leadForm.addEventListener('submit', event => {
+    event.preventDefault();
+    const data = Object.fromEntries(new FormData(event.currentTarget));
+    const birthDate = data.nascimento ? data.nascimento.split('-').reverse().join('/') : '-';
+    const message = `Olá! Vim pelo site do Cleano e gostaria de uma proposta KEM Telecom.\n\n*Nome:* ${data.nome}\n*WhatsApp:* ${data.telefone}\n*E-mail:* ${data.email || '-'}\n*Cliente:* ${data.cliente || '-'}\n*CPF:* ${data.cpf}\n*Data de nascimento:* ${birthDate}\n*CEP:* ${data.cep}\n*Endereço:* ${data.endereco}\n*Vencimento do boleto:* Dia ${data.vencimento}\n*Interesse:* ${data.interesse || 'Quero orientação'}\n*Necessidade:* ${data.mensagem || '-'}`;
+    window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
+  });
+}
+
 const referralPhone = document.querySelector('[name="telefone_indicado"]');
 referralPhone.addEventListener('input', event => {
   let value = event.target.value.replace(/\D/g, '').slice(0, 11);
